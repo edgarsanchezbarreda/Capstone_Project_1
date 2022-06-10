@@ -26,5 +26,18 @@ def fetch_muscle_group():
 
         db.session.add(target_muscle)
     db.session.commit()
-    
+
 fetch_muscle_group()
+
+def fetch_exercises(type):
+    response = requests.request("GET", f"{API_BASE_URL}/exercises", headers=headers)
+    data = response.json()
+
+    for equipment in data:
+        e = Exercise(name = equipment['name'], equipment_type = {type})
+
+        db.session.add(e)
+    db.session.commit()
+
+fetch_exercises('barbell')
+fetch_exercises('bodyweight')

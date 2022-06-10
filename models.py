@@ -1,3 +1,4 @@
+from enum import unique
 from re import L
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
@@ -69,11 +70,7 @@ class Exercise(db.Model):
 
     name = db.Column(db.Text, nullable = False, unique = True)
 
-    description = db.Column(db.Text)
-
-    exercise_type = db.Column(db.Text, nullable = False)
-
-    equipment_type = db.Column(db.Integer, db.ForeignKey('equipment.id', ondelete='cascade'))
+    equipment_type = db.Column(db.Text, nullable = False, unique = True)
 
 
 

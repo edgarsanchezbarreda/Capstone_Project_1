@@ -3,7 +3,7 @@ import requests
 import json
 from flask import Flask, request,  render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db
+from models import db, connect_db, User, Equipment, Muscle_Group, Exercise, User_Workout, Macros
 
 app = Flask(__name__)
 
