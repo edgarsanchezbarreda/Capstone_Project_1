@@ -11,15 +11,9 @@
 <body>
     <h1>Hello World</h1>
 
-    <form action="" method="get">
-        <label for="choice">Choice:</label>
-        <input type="text" name="choice">
-        <button>Submit</button>
-    </form>
-
     <ul>
         {% for bp in data %}
-        <li>{{bp}}</li>
+        <li>{{bp.bodyPart}}</li>
         {% endfor %}
     </ul>
 </body>

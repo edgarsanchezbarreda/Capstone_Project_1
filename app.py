@@ -8,7 +8,7 @@ from models import db, connect_db
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-os.environ.get('DATABASE_URL', 'postgresql:///capstone_1')
+os.environ.get('DATABASE_URL', 'postgresql:///fit_app')
 )
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] =  False
@@ -29,10 +29,9 @@ headers = {
 	"X-RapidAPI-Key": "7ddbb671c3msh5ac6eca10dce7d9p1c4f61jsna698597b6a3f"
 }
 
-# response = requests.request("GET", f"{API_BASE_URL}/exercises", headers=headers)
+response = requests.request("GET", f"{API_BASE_URL}/exercises", headers=headers)
 
-# data = response.json()
-
+exercise_data = response.json()
 
 ###############################################
 # Homepage route
@@ -40,8 +39,8 @@ headers = {
 @app.route('/')
 def home():
 
-    choice = request.args['choice']
+    # choice = request.args['choice']
 
     response = requests.request("GET", f"{API_BASE_URL}/exercises", headers=headers)
     data = response.json()
-    return render_template('index.html', data=data, choice=choice)
+    return render_template('index.html', data=data)
