@@ -1,4 +1,5 @@
 import requests
+from flask import session
 from app import db, response, exercise_data, API_BASE_URL, headers
 from models import User, Equipment, Muscle_Group, Exercise, User_Workout, Macros
 
@@ -30,14 +31,19 @@ def fetch_muscle_group():
 fetch_muscle_group()
 
 def fetch_exercises(type):
-    response = requests.request("GET", f"{API_BASE_URL}/exercises", headers=headers)
+    response = requests.request("GET", f"{API_BASE_URL}/exercises/equipment/{type}", headers=headers)
     data = response.json()
 
     for equipment in data:
-        e = Exercise(name = equipment['name'], equipment_type = {type})
+        
+        e = Exercise(name = equipment['name'], equipment_type = type)
 
         db.session.add(e)
-    db.session.commit()
+        db.session.commit()
 
+
+# fetch_exercises('bodyweight')
 fetch_exercises('barbell')
-fetch_exercises('bodyweight')
+fetch_exercises('dumbbell')
+fetch_exercises('body weight')
+fetch_exercises('cable')

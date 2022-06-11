@@ -68,9 +68,9 @@ class Exercise(db.Model):
 
     id = db.Column(db.Integer, primary_key = True)
 
-    name = db.Column(db.Text, nullable = False, unique = True)
+    name = db.Column(db.Text, nullable = False)
 
-    equipment_type = db.Column(db.Text, nullable = False, unique = True)
+    equipment_type = db.Column(db.Text, nullable = False)
 
 
 
