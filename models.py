@@ -32,12 +32,6 @@ class User(db.Model):
 
     goal = db.Column(db.Text, nullable = False)
 
-    equipment_id = db.Column(db.Integer, db.ForeignKey('equipment.id', ondelete='cascade'))
-
-    user_workout_id = db.Column(db.Integer, db.ForeignKey('user_workout.id', ondelete='cascade'))
-
-    macros_id = db.Column(db.Integer, db.ForeignKey('macros.id', ondelete='cascade'))
-
 
 
 class Equipment(db.Model):
@@ -49,19 +43,17 @@ class Equipment(db.Model):
 
     name = db.Column(db.Text, nullable = False, unique = True)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'))
 
+class User_Equipment(db.Model):
+    """The equipment type that user will use."""
 
-
-class Muscle_Group(db.Model):
-    """An individual muscle group."""
-
-    __tablename__ = 'muscle_group'
+    __tablename__ = 'user_equipment'
 
     id = db.Column(db.Integer, primary_key = True)
 
-    name = db.Column(db.Text, nullable = False, unique = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'))
 
+    equipment_id = db.Column(db.Integer, db.ForeignKey('equipment.id', ondelete = 'cascade'))
 
 
 class Exercise(db.Model):
@@ -73,22 +65,26 @@ class Exercise(db.Model):
 
     name = db.Column(db.Text, nullable = False)
 
-    equipment_type = db.Column(db.Text, nullable = False)
+    target_muscle = db.Column(db.Text, nullable = False)
 
-
-
-class User_Workout(db.Model):
-    """"A workout that is generated for a user based off their user information and responses to the questionnaire"""
-
-    __tablename__ = 'user_workout'
-
-    id = db.Column(db.Integer, primary_key = True)
+    exercise_gif = db.Column(db.Text)
 
     sets_per_exercise = db.Column(db.Integer, nullable = False)
 
     reps_per_set = db.Column(db.Integer, nullable = False)
 
-    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id', ondelete='cascade'))
+    equipment_type = db.Column(db.Integer, db.ForeignKey('equipment.id', ondelete='cascade'))
+
+
+class User_Workout(db.Model):
+    """A table that stores an individual user's exercises."""
+    __tablename__ = 'user_workout'
+
+    id = db.Column(db.Integer, primary_key = True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'))
+
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id', ondelete = 'cascade'))
 
 
 
@@ -107,6 +103,7 @@ class Macros(db.Model):
 
     fat = db.Column(db.Integer, nullable = False)
 
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'))
 
 
 def connect_db(app):

@@ -3,7 +3,7 @@ import requests
 import json
 from flask import Flask, request,  render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Equipment, Muscle_Group, Exercise, User_Workout, Macros
+from models import db, connect_db, User, Equipment, User_Equipment, Exercise, User_Workout, Macros
 
 app = Flask(__name__)
 
@@ -29,18 +29,10 @@ headers = {
 	"X-RapidAPI-Key": "7ddbb671c3msh5ac6eca10dce7d9p1c4f61jsna698597b6a3f"
 }
 
-def fetch_data(option='/'):
-    
-    print(data)
-
-
 
 ###############################################
 # Homepage route
 
 @app.route('/')
 def home():
-    response = requests.request("GET", f"{API_BASE_URL}/exercises/equipmentList", headers=headers)
-    data = response.json()
-    print(data)
-    return render_template('index.html', data=data)
+    return render_template('index.html')
