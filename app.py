@@ -29,18 +29,18 @@ headers = {
 	"X-RapidAPI-Key": "7ddbb671c3msh5ac6eca10dce7d9p1c4f61jsna698597b6a3f"
 }
 
-response = requests.request("GET", f"{API_BASE_URL}/exercises", headers=headers)
+def fetch_data(option='/'):
+    
+    print(data)
 
-exercise_data = response.json()
+
 
 ###############################################
 # Homepage route
 
 @app.route('/')
 def home():
-
-    # choice = request.args['choice']
-
-    response = requests.request("GET", f"{API_BASE_URL}/exercises", headers=headers)
+    response = requests.request("GET", f"{API_BASE_URL}/exercises/equipmentList", headers=headers)
     data = response.json()
+    print(data)
     return render_template('index.html', data=data)

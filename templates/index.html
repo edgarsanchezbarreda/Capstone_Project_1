@@ -1,21 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{% block content %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-</head>
+<h1 class="display-3">
+    Welcome to Fit App!
+</h1>
 
-<body>
-    <h1>Hello World</h1>
-
-    <ul>
-        {% for bp in data %}
-        <li>{{bp.bodyPart}}</li>
-        {% endfor %}
-    </ul>
-</body>
-
-</html>
+{% endblock %}

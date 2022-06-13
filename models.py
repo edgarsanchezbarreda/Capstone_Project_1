@@ -2,6 +2,7 @@ from enum import unique
 from re import L
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import ForeignKey
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -47,6 +48,8 @@ class Equipment(db.Model):
     id = db.Column(db.Integer, primary_key = True)
 
     name = db.Column(db.Text, nullable = False, unique = True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'))
 
 
 
