@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1 class="display-3">
-    Welcome to Fit App!
-</h1>
-
-<ul>
-    {% for d in rand %}
-    <li>{{d.name}}</li>
-    {% endfor %}
-</ul>
-
+<div class="container">
+    <div class="home-hero">
+        <h1>Welcome to Fit App!</h1>
+        <h4>Do you have an account?</h4>
+        <p>Sign up now to get your own personalized workout!</p>
+        <a href="/signup" class="btn btn-primary">Sign up</a>
+    </div>
+</div>
 {% endblock %}

@@ -34,5 +34,8 @@ headers = {
 def home():
     response = requests.request("GET", f"{API_BASE_URL}/exercises/bodyPart/chest", headers=headers)
     data = response.json()
-    rand = (random.sample(data, 3))
-    return render_template('index.html', data=data, rand = rand)
+    return render_template('index.html', data=data)
+
+
+# @app.route('/signup')
+# def signup():
