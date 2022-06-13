@@ -27,7 +27,6 @@ headers = {
 	"X-RapidAPI-Key": "7ddbb671c3msh5ac6eca10dce7d9p1c4f61jsna698597b6a3f"
 }
 
-
 ###############################################
 # Homepage route
 
