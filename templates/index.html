@@ -5,4 +5,10 @@
     Welcome to Fit App!
 </h1>
 
+<ul>
+    {% for d in rand %}
+    <li>{{d.name}}</li>
+    {% endfor %}
+</ul>
+
 {% endblock %}

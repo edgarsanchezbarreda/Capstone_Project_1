@@ -1,5 +1,3 @@
-from enum import unique
-from re import L
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey

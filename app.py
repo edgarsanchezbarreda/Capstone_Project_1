@@ -1,6 +1,4 @@
-import os
-import requests
-import json
+import os, requests, json, random
 from flask import Flask, request,  render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Equipment, User_Equipment, Exercise, User_Workout, Macros
@@ -35,4 +33,7 @@ headers = {
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    response = requests.request("GET", f"{API_BASE_URL}/exercises/bodyPart/chest", headers=headers)
+    data = response.json()
+    rand = (random.sample(data, 3))
+    return render_template('index.html', data=data, rand = rand)
