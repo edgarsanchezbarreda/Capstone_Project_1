@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, User, Exercise, User_Workout, Macros
-from forms import SignUpForm, LoginForm
+from forms import MacrosForm, SignUpForm, LoginForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -37,9 +37,26 @@ headers = {
 # Homepage route
 
 @app.route('/')
-def homepage():
+def home():
     if g.user:
+        
         return render_template('home.html')
+
+    else:
+        return render_template('index.html')
+@app.route('/home/<int:user_id>')
+def home_logged_in_user(user_id):
+    if g.user:
+        user = User.query.get(user_id)
+        return render_template('home.html', user=user)
+
+    else:
+        return render_template('index.html')
+@app.route('/home/<int:user_id>')
+def homepage(user_id):
+    if g.user:
+        user = User.query.get(user_id)
+        return render_template('home.html', user=user)
 
     else:
         return render_template('index.html')
@@ -91,7 +108,7 @@ def signup():
 
         do_login(user)
 
-        return redirect('/')
+        return redirect(f"/home/{user.id}")
 
     else:
         return render_template('users/signup.html', form=form)
@@ -110,7 +127,7 @@ def login():
         if user:
             do_login(user)
             flash(f"Hello, {user.username}!", "success")
-            return redirect("/")
+            return redirect(f"/home/{user.id}")
 
         flash("Invalid credentials.", 'danger')
 
@@ -124,3 +141,25 @@ def logout():
     session.pop(CURR_USER_KEY)
     flash("You have logged out!", "success")
     return redirect('/login')
+
+
+################################
+# Macros Calculation
+
+@app.route('/macros/<int:user_id>')
+def calculate_macros(user_id):
+    """Renders calculate macros page and handles calculation of macros"""
+
+    user = User.query.get(user_id)
+
+    form = MacrosForm()
+
+    # if form.validate_on_submit():
+    #     user = User.signup(
+    #         username=form.username.data,
+    #         password=form.password.data,
+    #         email=form.email.data
+    #         )
+    #     db.session.commit()
+
+    return render_template('users/macros.html', user=user, form=form)

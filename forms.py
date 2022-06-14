@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField
+from wtforms import StringField, PasswordField, TextAreaField, SelectField, IntegerField
 from wtforms.validators import DataRequired, Email, Length
 
 
@@ -16,3 +16,20 @@ class LoginForm(FlaskForm):
 
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6)])
+
+
+class MacrosForm(FlaskForm):
+    """Form used to calculate macros."""
+
+    gender = SelectField('Gender', choices = [('male', 'Male'), ('female', 'Female')], validators=[DataRequired()])
+
+    age = IntegerField('Age', validators=[DataRequired()])
+
+    height = IntegerField('Height in cm', validators=[DataRequired()])
+
+    weight = IntegerField('Weight in kg', validators=[DataRequired()])
+
+    activity_level = SelectField('Activity Level', choices = [('sedentary', 'Sedentary (office job)'), ('light_exercise', 'Light Exercise (1-2 days/week)'), ('moderate_exercise', 'Moderate Exercise (3-5 days/week)'), ('heavy_exercise', 'Heavy Exercise (6-7 days/week)'), ('athlete', 'Athlete (2x per day)')
+    ], validators=[DataRequired()])
+
+    body_fat = IntegerField('Body Fat %', validators=[DataRequired()])

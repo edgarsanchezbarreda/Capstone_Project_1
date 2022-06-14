@@ -1,49 +1,35 @@
 import requests
 from flask import session
-from app import db, response, exercise_data, API_BASE_URL, headers
-from models import User, Equipment, Muscle_Group, Exercise, User_Workout, Macros
+from app import db
+from models import User, Exercise, User_Workout, Macros
 
 db.drop_all()
 db.create_all()
 
-def fetch_equipment():
-    response = requests.request("GET", f"{API_BASE_URL}/exercises/equipmentList", headers=headers)
-    data = response.json()
+# edgar = User(
+#     username = 'EdgarS',
+#     email = 'edgars@gmail.com',
+#     password = 'EdgarS',
+#     age = 27,
+#     height = 175,
+#     weight = 100,
+#     gender = 'Male',
+#     activity_level = 'Sedentary',
+#     goal = 'Lose Weight'
+# )
 
-    for equipment in data:
-        equipment_type = Equipment(name = equipment)
+# hilda = User(
+#     username = 'HildaA',
+#     email = 'hildaa@gmail.com',
+#     password = 'HildaA',
+#     age = 26,
+#     height = 150,
+#     weight = 73,
+#     gender = 'Female',
+#     activity_level = 'Sedentary',
+#     goal = 'Gain Muscle'
+# )
 
-        db.session.add(equipment_type)
-    db.session.commit()
-
-fetch_equipment()
-
-def fetch_muscle_group():
-    response = requests.request("GET", f"{API_BASE_URL}/exercises/targetList", headers=headers)
-    data = response.json()
-
-    for muscle_group in data:
-        target_muscle = Muscle_Group(name = muscle_group)
-
-        db.session.add(target_muscle)
-    db.session.commit()
-
-fetch_muscle_group()
-
-def fetch_exercises(type):
-    response = requests.request("GET", f"{API_BASE_URL}/exercises/equipment/{type}", headers=headers)
-    data = response.json()
-
-    for equipment in data:
-        
-        e = Exercise(name = equipment['name'], equipment_type = type)
-
-        db.session.add(e)
-        db.session.commit()
-
-
-# fetch_exercises('bodyweight')
-fetch_exercises('barbell')
-fetch_exercises('dumbbell')
-fetch_exercises('body weight')
-fetch_exercises('cable')
+# db.session.add(edgar)
+# db.session.add(hilda)
+# db.session.commit()

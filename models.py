@@ -26,7 +26,11 @@ class User(db.Model):
 
     weight = db.Column(db.Integer)
 
+    gender = db.Column(db.Text)
+
     activity_level = db.Column(db.Text)
+
+    body_fat = db.Column(db.Integer)
 
     goal = db.Column(db.Text)
 

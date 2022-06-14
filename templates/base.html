@@ -22,10 +22,14 @@
     <nav class="navbar navbar-expand">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a href="/" class="navbar-brand">
-                    <i class="fa-solid fa-dumbbell"></i>
-                    <span>Fit App</span>
-                </a>
+                {% if g.user %}
+                <a href="/home/{{user.id}}" class="navbar-brand">
+                    {% else %}
+                    <a href="/" class="navbar-brand">
+                        {% endif %}
+                        <i class="fa-solid fa-dumbbell"></i>
+                        <span>Fit App</span>
+                    </a>
             </div>
             <ul class="nav navbar-nav navbar-right">
 
