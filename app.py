@@ -1,7 +1,13 @@
 import os, requests, json, random
-from flask import Flask, request,  render_template, redirect, flash, session
+
+from flask import Flask, request,  render_template, redirect, flash, session, g
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Equipment, User_Equipment, Exercise, User_Workout, Macros
+from sqlalchemy.exc import IntegrityError
+
+from models import db, connect_db, User, Exercise, User_Workout, Macros
+from forms import SignUpForm, LoginForm
+
+CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
 
@@ -31,11 +37,90 @@ headers = {
 # Homepage route
 
 @app.route('/')
-def home():
-    response = requests.request("GET", f"{API_BASE_URL}/exercises/bodyPart/chest", headers=headers)
-    data = response.json()
-    return render_template('index.html', data=data)
+def homepage():
+    if g.user:
+        return render_template('home.html')
+
+    else:
+        return render_template('index.html')
 
 
-# @app.route('/signup')
-# def signup():
+###############################################
+#Signup, Login, Logout routes
+
+@app.before_request
+def add_user_to_g():
+    """If we're logged in, add curr user to Flask global."""
+
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
+
+    else:
+        g.user = None
+
+
+def do_login(user):
+    """Log in user."""
+
+    session[CURR_USER_KEY] = user.id
+
+
+def do_logout():
+    """Logout user."""
+
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
+
+
+@app.route('/signup', methods = ['GET', 'POST'])
+def signup():
+    form = SignUpForm()
+
+    if form.validate_on_submit():
+        # try:
+        user = User.signup(
+            username=form.username.data,
+            password=form.password.data,
+            email=form.email.data
+            )
+        db.session.commit()
+
+        # except IntegrityError:
+        #     flash("Username already taken", 'danger')
+        #     return render_template('users/signup.html', form=form)
+
+        do_login(user)
+
+        return redirect('/')
+
+    else:
+        return render_template('users/signup.html', form=form)
+
+    
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    """Handle user login."""
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data,
+                                 form.password.data)
+
+        if user:
+            do_login(user)
+            flash(f"Hello, {user.username}!", "success")
+            return redirect("/")
+
+        flash("Invalid credentials.", 'danger')
+
+    return render_template('users/login.html', form=form)
+
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    """Handle logout of user."""
+    session.pop(CURR_USER_KEY)
+    flash("You have logged out!", "success")
+    return redirect('/login')

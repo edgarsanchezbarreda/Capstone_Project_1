@@ -14,44 +14,64 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    first_name = db.Column(db.Text, nullable = False)
-
-    last_name = db.Column(db.Text, nullable = False)
-
-    age = db.Column(db.Integer, nullable = False)
-
-    height = db.Column(db.Integer, nullable = False)
-
-    weight = db.Column(db.Integer, nullable = False)
+    username = db.Column(db.Text, nullable = False, unique = True)
 
     email = db.Column(db.Text, nullable = False, unique = True)
 
-    acitivity_level = db.Column(db.Text)
+    password = db.Column(db.Text, nullable = False)
 
-    goal = db.Column(db.Text, nullable = False)
+    age = db.Column(db.Integer)
+
+    height = db.Column(db.Integer)
+
+    weight = db.Column(db.Integer)
+
+    activity_level = db.Column(db.Text)
+
+    goal = db.Column(db.Text)
+
+    macros = db.relationship('Macros')
+
+    exercises = db.relationship('Exercise')
 
 
+    @classmethod
+    def signup(cls, username, email, password):
+        """Sign up user.
 
-class Equipment(db.Model):
-    """The type of equipment that is available to a user."""
+        Hashes password and adds user to system.
+        """
 
-    __tablename__ = 'equipment'
+        hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
 
-    id = db.Column(db.Integer, primary_key = True)
+        user = User(
+            username=username,
+            email=email,
+            password=hashed_pwd
+        )
 
-    name = db.Column(db.Text, nullable = False, unique = True)
+        db.session.add(user)
+        return user
 
+    @classmethod
+    def authenticate(cls, username, password):
+        """Find user with `username` and `password`.
 
-class User_Equipment(db.Model):
-    """The equipment type that user will use."""
+        This is a class method (call it on the class, not an individual user.)
+        It searches for a user whose password hash matches this password
+        and, if it finds such a user, returns that user object.
 
-    __tablename__ = 'user_equipment'
+        If can't find matching user (or if password is wrong), returns False.
+        """
 
-    id = db.Column(db.Integer, primary_key = True)
+        user = cls.query.filter_by(username=username).first()
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'))
+        if user:
+            is_auth = bcrypt.check_password_hash(user.password, password)
+            if is_auth:
+                return user
 
-    equipment_id = db.Column(db.Integer, db.ForeignKey('equipment.id', ondelete = 'cascade'))
+        return False
 
 
 class Exercise(db.Model):
@@ -71,7 +91,9 @@ class Exercise(db.Model):
 
     reps_per_set = db.Column(db.Integer, nullable = False)
 
-    equipment_type = db.Column(db.Integer, db.ForeignKey('equipment.id', ondelete='cascade'))
+    equipment_type = db.Column(db.Text, nullable = False, unique = True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'))
 
 
 class User_Workout(db.Model):
@@ -101,7 +123,7 @@ class Macros(db.Model):
 
     fat = db.Column(db.Integer, nullable = False)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'), nullable = False)
 
 
 def connect_db(app):
