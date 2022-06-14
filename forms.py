@@ -29,7 +29,7 @@ class MacrosForm(FlaskForm):
 
     weight = IntegerField('Weight in kg', validators=[DataRequired()])
 
-    activity_level = SelectField('Activity Level', choices = [('sedentary', 'Sedentary (office job)'), ('light_exercise', 'Light Exercise (1-2 days/week)'), ('moderate_exercise', 'Moderate Exercise (3-5 days/week)'), ('heavy_exercise', 'Heavy Exercise (6-7 days/week)'), ('athlete', 'Athlete (2x per day)')
+    activity_level = SelectField('Activity Level', choices = [(1.2, 'Sedentary (office job)'), (1.375, 'Light Exercise (1-2 days/week)'), (1.55, 'Moderate Exercise (3-5 days/week)'), (1.725, 'Heavy Exercise (6-7 days/week)'), (1.9, 'Athlete (2x per day)')
     ], validators=[DataRequired()])
 
     body_fat = IntegerField('Body Fat %', validators=[DataRequired()])

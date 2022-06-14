@@ -78,6 +78,57 @@ class User(db.Model):
         return False
 
 
+    @classmethod
+    def calculate_macros(cls, self, gender, age, height, weight, activity_level, body_fat):
+        """Calculate macros if body fat is included"""
+
+        # sedentary = 1.2
+        # light_exercise = 1.375
+        # moderate_exercise = 1.55
+        # heavy_exercise = 1.725
+        # athlete = 1.9
+        user = User.query.filter_by(self.id).first()
+
+        if gender == 'Male':
+
+            weight_calc = weight*10
+            height_calc = height*10
+            age_calc = (age*5) + 5
+
+            BMR = weight_calc + height_calc - age_calc
+            macros_calculated = BMR * activity_level
+
+            macros = Macros(
+                calorie_maintenance=macros_calculated,
+                protein = weight,
+                carbohydrate = 100,
+                fat = 100,
+                user_id = user.id      
+                )
+            db.session.add(macros)
+            db.session.commit()
+            print(macros_calculated)
+            return macros_calculated
+        else:
+            weight_calc = weight*10
+            height_calc = height*10
+            age_calc = (age*5) - 161
+
+            BMR = weight_calc + height_calc - age_calc
+            macros_calculated = BMR * activity_level
+
+            macros = Macros(
+                calorie_maintenance=macros_calculated,
+                protein = weight,
+                carbohydrate = 100,
+                fat = 100,
+                user_id = user.id      
+                )
+            db.session.add(macros)
+            db.session.commit()
+            print(macros_calculated)
+            return macros_calculated  
+
 class Exercise(db.Model):
     """An individual exercise/movement"""
 

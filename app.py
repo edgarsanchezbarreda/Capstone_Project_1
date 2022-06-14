@@ -154,12 +154,23 @@ def calculate_macros(user_id):
 
     form = MacrosForm()
 
-    # if form.validate_on_submit():
-    #     user = User.signup(
-    #         username=form.username.data,
-    #         password=form.password.data,
-    #         email=form.email.data
-    #         )
-    #     db.session.commit()
+    if form.validate_on_submit():
+        macros = User.calculate_macros(
+            form.gender.data,
+            form.age.data,
+            form.height.data,
+            form.weight.data,
+            form.activity_level.data,
+            form.body_fat.data,
+            )
+        db.session.commit()
+
+        return redirect(f"macros/{user.id}/next")
 
     return render_template('users/macros.html', user=user, form=form)
+
+@app.route('/macros/<int:user_id>/next')
+def next(user_id):
+    user = User.query.get(user_id)
+
+    return render_template('users/next.html', user = user)
