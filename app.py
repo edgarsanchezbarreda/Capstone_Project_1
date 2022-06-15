@@ -156,30 +156,51 @@ def calculate_macros():
     form = MacrosForm()
 
     if form.validate_on_submit():
+        if form.gender.data == 'male':
+            weight_calc = form.weight.data*10
+            height_calc = form.height.data*6.25
+            age_calc = (form.age.data * 5) + 5
+            print(age_calc)
+            BMR = weight_calc + height_calc - age_calc
+            print(BMR)
+            macros_calculated = BMR * float(form.activity_level.data)
+            print(macros_calculated)
+            user.gender = form.gender.data
+            user.age = form.age.data
+            user.height = form.height.data
+            user.weight = form.weight.data
+            user.activity_level = form.activity_level.data
+            user.calorie_maintenance = macros_calculated,
+            user.protein = (macros_calculated * .4)/4,
+            user.carbohydrate = (macros_calculated * .2)/4,
+            user.fat = (macros_calculated * .4)/9    
+            
+            db.session.commit()
+            
+            return redirect(f"macros/{user_id}/next")
         
-        weight_calc = form.weight.data*10
-        height_calc = form.height.data*6.25
-        age_calc = (form.age.data * 5) + 5
-        
-        BMR = weight_calc + height_calc - age_calc
-        
-        macros_calculated = BMR * float(form.activity_level.data)
-        
-        user.gender = form.gender.data
-        user.age = form.age.data
-        user.height = form.height.data
-        user.weight = form.weight.data
-        user.activity_level = form.activity_level.data
-        user.calorie_maintenance = macros_calculated,
-        user.protein = (macros_calculated * .4)/4,
-        user.carbohydrate = (macros_calculated * .2)/4,
-        user.fat = (macros_calculated * .4)/9    
-        
-        db.session.commit()
-        
-        return redirect(f"macros/{user_id}/next")
-
-    
+        else:
+            weight_calc = form.weight.data*10
+            height_calc = form.height.data*6.25
+            age_calc = (form.age.data * 5) - 161
+            print(age_calc)
+            BMR = weight_calc + height_calc - age_calc
+            print(BMR)
+            macros_calculated = BMR * float(form.activity_level.data)
+            print(macros_calculated)
+            user.gender = form.gender.data
+            user.age = form.age.data
+            user.height = form.height.data
+            user.weight = form.weight.data
+            user.activity_level = form.activity_level.data
+            user.calorie_maintenance = macros_calculated,
+            user.protein = (macros_calculated * .4)/4,
+            user.carbohydrate = (macros_calculated * .2)/4,
+            user.fat = (macros_calculated * .4)/9    
+            
+            db.session.commit()
+            
+            return redirect(f"macros/{user_id}/next")
 
     return render_template('users/macros.html', user=user, form=form)
 
