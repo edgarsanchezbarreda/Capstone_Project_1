@@ -1,7 +1,7 @@
 import requests
 from flask import session
 from app import db
-from models import User, Exercise, User_Workout, Macros
+from models import User, Exercise, User_Workout
 
 db.drop_all()
 db.create_all()

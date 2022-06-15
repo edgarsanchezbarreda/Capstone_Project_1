@@ -4,7 +4,7 @@ from flask import Flask, request,  render_template, redirect, flash, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from models import db, connect_db, User, Exercise, User_Workout, Macros
+from models import db, connect_db, User, Exercise, User_Workout
 from forms import MacrosForm, SignUpForm, LoginForm
 
 CURR_USER_KEY = "curr_user"
@@ -146,26 +146,40 @@ def logout():
 ################################
 # Macros Calculation
 
-@app.route('/macros/<int:user_id>')
-def calculate_macros(user_id):
+@app.route('/macros', methods=['GET', 'POST'])
+def calculate_macros():
     """Renders calculate macros page and handles calculation of macros"""
 
+    user_id = session[CURR_USER_KEY]
     user = User.query.get(user_id)
 
     form = MacrosForm()
 
     if form.validate_on_submit():
-        macros = User.calculate_macros(
-            form.gender.data,
-            form.age.data,
-            form.height.data,
-            form.weight.data,
-            form.activity_level.data,
-            form.body_fat.data,
-            )
+        
+        weight_calc = form.weight.data*10
+        height_calc = form.height.data*6.25
+        age_calc = (form.age.data * 5) + 5
+        
+        BMR = weight_calc + height_calc - age_calc
+        
+        macros_calculated = BMR * float(form.activity_level.data)
+        
+        user.gender = form.gender.data
+        user.age = form.age.data
+        user.height = form.height.data
+        user.weight = form.weight.data
+        user.activity_level = form.activity_level.data
+        user.calorie_maintenance = macros_calculated,
+        user.protein = (macros_calculated * .4)/4,
+        user.carbohydrate = (macros_calculated * .2)/4,
+        user.fat = (macros_calculated * .4)/9    
+        
         db.session.commit()
+        
+        return redirect(f"macros/{user_id}/next")
 
-        return redirect(f"macros/{user.id}/next")
+    
 
     return render_template('users/macros.html', user=user, form=form)
 

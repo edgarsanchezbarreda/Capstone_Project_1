@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField, SelectField, IntegerField
+from wtforms import StringField, PasswordField, TextAreaField, SelectField, IntegerField, FloatField
 from wtforms.validators import DataRequired, Email, Length
 
 
@@ -25,11 +25,9 @@ class MacrosForm(FlaskForm):
 
     age = IntegerField('Age', validators=[DataRequired()])
 
-    height = IntegerField('Height in cm', validators=[DataRequired()])
+    height = FloatField('Height in cm', validators=[DataRequired()])
 
-    weight = IntegerField('Weight in kg', validators=[DataRequired()])
+    weight = FloatField('Weight in kg', validators=[DataRequired()])
 
     activity_level = SelectField('Activity Level', choices = [(1.2, 'Sedentary (office job)'), (1.375, 'Light Exercise (1-2 days/week)'), (1.55, 'Moderate Exercise (3-5 days/week)'), (1.725, 'Heavy Exercise (6-7 days/week)'), (1.9, 'Athlete (2x per day)')
     ], validators=[DataRequired()])
-
-    body_fat = IntegerField('Body Fat %', validators=[DataRequired()])

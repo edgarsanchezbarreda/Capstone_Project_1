@@ -1,6 +1,7 @@
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
+from forms import MacrosForm
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -28,13 +29,17 @@ class User(db.Model):
 
     gender = db.Column(db.Text)
 
-    activity_level = db.Column(db.Text)
+    calorie_maintenance = db.Column(db.Float)
 
-    body_fat = db.Column(db.Integer)
+    protein = db.Column(db.Float)
+
+    carbohydrate = db.Column(db.Float)
+
+    fat = db.Column(db.Float)
+
+    activity_level = db.Column(db.Float)
 
     goal = db.Column(db.Text)
-
-    macros = db.relationship('Macros')
 
     exercises = db.relationship('Exercise')
 
@@ -78,56 +83,47 @@ class User(db.Model):
         return False
 
 
-    @classmethod
-    def calculate_macros(cls, self, gender, age, height, weight, activity_level, body_fat):
-        """Calculate macros if body fat is included"""
+    # @classmethod
+    # def calculate_macros(cls, self, gender, age, height, weight, activity_level):
+    #     """Calculate macros if body fat is included"""
 
-        # sedentary = 1.2
-        # light_exercise = 1.375
-        # moderate_exercise = 1.55
-        # heavy_exercise = 1.725
-        # athlete = 1.9
-        user = User.query.filter_by(self.id).first()
+    #     user = User.query.filter_by(self.id).first()
 
-        if gender == 'Male':
+    #     if gender == 'Male':
 
-            weight_calc = weight*10
-            height_calc = height*10
-            age_calc = (age*5) + 5
+    #         weight_calc = weight*10
+    #         height_calc = height*6.25
+    #         age_calc = (age * 5) + 5
 
-            BMR = weight_calc + height_calc - age_calc
-            macros_calculated = BMR * activity_level
+    #         BMR = weight_calc + height_calc - age_calc
+    #         macros_calculated = BMR * activity_level
 
-            macros = Macros(
-                calorie_maintenance=macros_calculated,
-                protein = weight,
-                carbohydrate = 100,
-                fat = 100,
-                user_id = user.id      
-                )
-            db.session.add(macros)
-            db.session.commit()
-            print(macros_calculated)
-            return macros_calculated
-        else:
-            weight_calc = weight*10
-            height_calc = height*10
-            age_calc = (age*5) - 161
+    #         macros = User(
+    #             calorie_maintenance=macros_calculated,
+    #             protein = (macros_calculated * .4)/4,
+    #             carbohydrate = (macros_calculated * .2)/4,
+    #             fat = (macros_calculated * .4)/9    
+    #             )
+    #         db.session.add(macros)
+    #         print(macros_calculated)
+    #         return macros_calculated
+    #     else:
+    #         weight_calc = weight*10
+    #         height_calc = height*6.25
+    #         age_calc = (age * 5) - 161
 
-            BMR = weight_calc + height_calc - age_calc
-            macros_calculated = BMR * activity_level
+    #         BMR = weight_calc + height_calc - age_calc
+    #         macros_calculated = BMR * activity_level
 
-            macros = Macros(
-                calorie_maintenance=macros_calculated,
-                protein = weight,
-                carbohydrate = 100,
-                fat = 100,
-                user_id = user.id      
-                )
-            db.session.add(macros)
-            db.session.commit()
-            print(macros_calculated)
-            return macros_calculated  
+    #         macros = User(
+    #             calorie_maintenance=macros_calculated,
+    #             protein = (macros_calculated * .4)/4,
+    #             carbohydrate = (macros_calculated * .2)/4,
+    #             fat = (macros_calculated * .4)/9    
+    #             )
+    #         db.session.add(macros)
+    #         print(macros_calculated)
+    #         return macros_calculated 
 
 class Exercise(db.Model):
     """An individual exercise/movement"""
@@ -161,24 +157,6 @@ class User_Workout(db.Model):
 
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id', ondelete = 'cascade'))
 
-
-
-class Macros(db.Model):
-    """The recommended daily macronutrient and calorie intake based off user's goal, age, height, weight, and activity level """
-
-    __tablename__ = 'macros'
-
-    id = db.Column(db.Integer, primary_key = True)
-
-    calorie_maintenance = db.Column(db.Integer, nullable = False)
-
-    protein = db.Column(db.Integer, nullable = False)
-
-    carbohydrate = db.Column(db.Integer, nullable = False)
-
-    fat = db.Column(db.Integer, nullable = False)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'), nullable = False)
 
 
 def connect_db(app):
