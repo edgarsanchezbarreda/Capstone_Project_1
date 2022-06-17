@@ -31,3 +31,11 @@ class MacrosForm(FlaskForm):
 
     activity_level = SelectField('Activity Level', choices = [(1.2, 'Sedentary (office job)'), (1.375, 'Light Exercise (1-2 days/week)'), (1.55, 'Moderate Exercise (3-5 days/week)'), (1.725, 'Heavy Exercise (6-7 days/week)'), (1.9, 'Athlete (2x per day)')
     ], validators=[DataRequired()])
+
+class GoalForm(FlaskForm):
+    """Form used to select fitness goal."""
+
+    goal = SelectField('Fitness Goal', choices = [('lose weight', 'Lose Weight'), ('build muscle', 'Build Muscle'), ('gain strength', 'Gain Strength')], validators=[DataRequired()])
+
+
+

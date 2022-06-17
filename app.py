@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, User, Exercise, User_Workout
-from forms import MacrosForm, SignUpForm, LoginForm
+from forms import MacrosForm, SignUpForm, LoginForm, GoalForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -44,6 +44,7 @@ def home():
 
     else:
         return render_template('index.html')
+
 @app.route('/home/<int:user_id>')
 def home_logged_in_user(user_id):
     if g.user:
@@ -52,6 +53,7 @@ def home_logged_in_user(user_id):
 
     else:
         return render_template('index.html')
+
 @app.route('/home/<int:user_id>')
 def homepage(user_id):
     if g.user:
@@ -144,13 +146,38 @@ def logout():
 
 
 ################################
+# Questionnaire 
+
+@app.route('/questionnaire/<int:user_id>', methods = ['GET', 'POST'])
+def questionnaire_start(user_id):
+    user = User.query.get(user_id)
+
+    form = GoalForm()
+
+    if form.validate_on_submit():
+        user.goal = form.goal.data
+        db.session.commit()
+        return redirect(f"/questionnaire/{user.id}/macros")
+
+    return render_template('/users/questionnaire_start.html', user = user, form = form)
+
+
+@app.route('/questionnaire/<int:user_id>/macros')
+def questionnaire_macros(user_id):
+    user = User.query.get(user_id)
+
+    return render_template('/users/questionnaire_macros.html', user = user)
+
+
+
+
+################################
 # Macros Calculation
 
-@app.route('/macros', methods=['GET', 'POST'])
-def calculate_macros():
+@app.route('/macros/<int:user_id>', methods=['GET', 'POST'])
+def calculate_macros(user_id):
     """Renders calculate macros page and handles calculation of macros"""
 
-    user_id = session[CURR_USER_KEY]
     user = User.query.get(user_id)
 
     form = MacrosForm()
@@ -160,13 +187,11 @@ def calculate_macros():
             weight_calc = form.weight.data*10
             height_calc = form.height.data*6.25
             age_calc = (form.age.data * 5)
-            print(weight_calc)
-            print(height_calc)
-            print(age_calc)
+
             BMR = (weight_calc + height_calc) - age_calc + 5
-            print(BMR)
+            
             macros_calculated = math.ceil(BMR * float(form.activity_level.data))
-            print(macros_calculated)
+            
             user.gender = form.gender.data
             user.age = form.age.data
             user.height = form.height.data
@@ -179,19 +204,17 @@ def calculate_macros():
             
             db.session.commit()
             
-            return redirect(f"macros/{user_id}/detail")
+            return redirect(f"/macros/{user.id}/detail")
         
         else:
             weight_calc = form.weight.data*10
             height_calc = form.height.data*6.25
             age_calc = (form.age.data * 5)
-            print(weight_calc)
-            print(height_calc)
-            print(age_calc)
+
             BMR = (weight_calc + height_calc) - age_calc - 161
-            print(BMR)
+            
             macros_calculated = math.ceil(BMR * float(form.activity_level.data))
-            print(macros_calculated)
+            
             user.gender = form.gender.data
             user.age = form.age.data
             user.height = form.height.data
@@ -204,7 +227,7 @@ def calculate_macros():
             
             db.session.commit()
             
-            return redirect(f"macros/{user_id}/detail")
+            return redirect(f"/macros/{user.id}/detail")
 
     return render_template('users/macros.html', user=user, form=form)
 
