@@ -179,7 +179,7 @@ def calculate_macros():
             
             db.session.commit()
             
-            return redirect(f"macros/{user_id}/next")
+            return redirect(f"macros/{user_id}/detail")
         
         else:
             weight_calc = form.weight.data*10
@@ -204,14 +204,14 @@ def calculate_macros():
             
             db.session.commit()
             
-            return redirect(f"macros/{user_id}/next")
+            return redirect(f"macros/{user_id}/detail")
 
     return render_template('users/macros.html', user=user, form=form)
 
-@app.route('/macros/<int:user_id>/next')
+@app.route('/macros/<int:user_id>/detail')
 def next(user_id):
     user = User.query.get(user_id)
 
-    return render_template('users/next.html', user = user)
+    return render_template('users/macros_detail.html', user = user)
 
 
