@@ -1,4 +1,4 @@
-import os, requests, json, random
+import os, requests, json, random, math
 
 from flask import Flask, request,  render_template, redirect, flash, session, g
 from flask_debugtoolbar import DebugToolbarExtension
@@ -159,11 +159,13 @@ def calculate_macros():
         if form.gender.data == 'male':
             weight_calc = form.weight.data*10
             height_calc = form.height.data*6.25
-            age_calc = (form.age.data * 5) + 5
+            age_calc = (form.age.data * 5)
+            print(weight_calc)
+            print(height_calc)
             print(age_calc)
-            BMR = weight_calc + height_calc - age_calc
+            BMR = (weight_calc + height_calc) - age_calc + 5
             print(BMR)
-            macros_calculated = BMR * float(form.activity_level.data)
+            macros_calculated = math.ceil(BMR * float(form.activity_level.data))
             print(macros_calculated)
             user.gender = form.gender.data
             user.age = form.age.data
@@ -182,11 +184,13 @@ def calculate_macros():
         else:
             weight_calc = form.weight.data*10
             height_calc = form.height.data*6.25
-            age_calc = (form.age.data * 5) - 161
+            age_calc = (form.age.data * 5)
+            print(weight_calc)
+            print(height_calc)
             print(age_calc)
-            BMR = weight_calc + height_calc - age_calc
+            BMR = (weight_calc + height_calc) - age_calc - 161
             print(BMR)
-            macros_calculated = BMR * float(form.activity_level.data)
+            macros_calculated = math.ceil(BMR * float(form.activity_level.data))
             print(macros_calculated)
             user.gender = form.gender.data
             user.age = form.age.data
@@ -209,3 +213,5 @@ def next(user_id):
     user = User.query.get(user_id)
 
     return render_template('users/next.html', user = user)
+
+
