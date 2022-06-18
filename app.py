@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, User, Exercise, User_Workout
-from forms import MacrosForm, SignUpForm, LoginForm, GoalForm
+from forms import MacrosForm, SignUpForm, LoginForm, GoalForm, EquipmentTypeForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -47,15 +47,6 @@ def home():
 
 @app.route('/home/<int:user_id>')
 def home_logged_in_user(user_id):
-    if g.user:
-        user = User.query.get(user_id)
-        return render_template('home.html', user=user)
-
-    else:
-        return render_template('index.html')
-
-@app.route('/home/<int:user_id>')
-def homepage(user_id):
     if g.user:
         user = User.query.get(user_id)
         return render_template('home.html', user=user)
@@ -198,9 +189,9 @@ def calculate_macros(user_id):
             user.weight = form.weight.data
             user.activity_level = form.activity_level.data
             user.calorie_maintenance = macros_calculated,
-            user.protein = (macros_calculated * .4)/4,
-            user.carbohydrate = (macros_calculated * .2)/4,
-            user.fat = (macros_calculated * .4)/9    
+            user.protein = math.ceil(form.weight.data * 2.2),
+            user.carbohydrate = math.ceil((macros_calculated * .2)/4),
+            user.fat = math.ceil((macros_calculated * .4)/9)    
             
             db.session.commit()
             
@@ -221,9 +212,9 @@ def calculate_macros(user_id):
             user.weight = form.weight.data
             user.activity_level = form.activity_level.data
             user.calorie_maintenance = macros_calculated,
-            user.protein = (macros_calculated * .4)/4,
-            user.carbohydrate = (macros_calculated * .2)/4,
-            user.fat = (macros_calculated * .4)/9    
+            user.protein = math.ceil((form.weight.data * 2.2)),
+            user.carbohydrate = math.ceil((macros_calculated * .2)/4),
+            user.fat = math.ceil((macros_calculated * .4)/9)    
             
             db.session.commit()
             
@@ -236,5 +227,22 @@ def next(user_id):
     user = User.query.get(user_id)
 
     return render_template('users/macros_detail.html', user = user)
+
+
+###############################
+# Program Details and Questionnaire
+
+@app.route('/program/<int:user_id>', methods = ['GET', 'POST'])
+def equipment_choice(user_id):
+    user = User.query.get(user_id)
+
+    form = EquipmentTypeForm()
+
+    if form.validate_on_submit():
+        user.equipment_type = form.equipment_type.data
+        db.session.commit()
+
+        return redirect(f"/program/{user.id}/template")
+    return render_template('program/equipment_choice.html', user = user, form = form)
 
 

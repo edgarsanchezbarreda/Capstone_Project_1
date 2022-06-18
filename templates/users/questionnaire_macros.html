@@ -5,11 +5,12 @@
 <div class="row justify-content-md-center">
     <div class="home-hero">
         <div class="col-md-7 col-lg-5">
-            <h1>Would you like to find out how many calories you need to consume to accomplish your goal?</h1>
-            <form method="POST" id="user_form">
-                <button formaction="/macros/{{user.id}}" class="btn btn-primary btn-lg btn-block">Click here</button>
-                <button formaction="/" class="btn btn-danger btn-lg btn-block">Skip</button>
-            </form>
+            <h2>Would you like to calculate the calories and macronutrients needed to {{user.goal}}?</h2>
+            <a href="/macros/{{user.id}}" class="btn btn-primary btn-md btn-block">Click here</a>
+            <a href="/" class="btn btn-danger btn-md btn-block">Skip</a>
+            <!-- <button formaction="/macros/{{user.id}}" class="btn btn-primary btn-md btn-block">Click here</button>
+            <button formaction="/" class="btn btn-danger btn-md btn-block">Skip</button> -->
+
         </div>
     </div>
 </div>

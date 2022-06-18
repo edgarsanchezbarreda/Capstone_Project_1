@@ -38,4 +38,7 @@ class GoalForm(FlaskForm):
     goal = SelectField('Fitness Goal', choices = [('lose weight', 'Lose Weight'), ('build muscle', 'Build Muscle'), ('gain strength', 'Gain Strength')], validators=[DataRequired()])
 
 
+class EquipmentTypeForm(FlaskForm):
+    """Form used to select equipment available to user."""
 
+    equipment_type = SelectField('Equipment Type', choices = [('barbell', 'Barbell'), ('dumbbell', 'Dumbbell'), ('body weight', 'Body Weight')], validators=[DataRequired()])
