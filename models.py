@@ -42,6 +42,8 @@ class User(db.Model):
     goal = db.Column(db.Text)
 
     equipment_type = db.Column(db.Text)
+    
+    target_muscle = db.Column(db.Text)
 
     exercises = db.relationship('Exercise')
 

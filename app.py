@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, User, Exercise, User_Workout
-from forms import MacrosForm, SignUpForm, LoginForm, GoalForm, EquipmentTypeForm
+from forms import MacrosForm, SignUpForm, LoginForm, GoalForm, EquipmentTypeForm, TargetMuscleListForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -233,16 +233,27 @@ def next(user_id):
 # Program Details and Questionnaire
 
 @app.route('/program/<int:user_id>', methods = ['GET', 'POST'])
-def equipment_choice(user_id):
+def program_choice(user_id):
+    """This route allows a user to select the equipment that is available to them as well as any priority muscle group."""
     user = User.query.get(user_id)
 
     form = EquipmentTypeForm()
-
+    muscle_form = TargetMuscleListForm()
     if form.validate_on_submit():
         user.equipment_type = form.equipment_type.data
         db.session.commit()
+    if muscle_form.validate_on_submit():
+        user.target_muscle = muscle_form.target_muscle.data
+        db.session.commit()
 
         return redirect(f"/program/{user.id}/template")
-    return render_template('program/equipment_choice.html', user = user, form = form)
+    return render_template('program/program_choice.html', user = user, form = form, muscle_form = muscle_form)
 
+
+@app.route('/program/<int:user_id>/template')
+def program_template(user_id):
+    """This form will display their generated program."""
+    user = User.query.get(user_id)
+
+    return render_template('/program/program_template.html', user = user)
 
