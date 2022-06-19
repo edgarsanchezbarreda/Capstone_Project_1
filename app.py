@@ -23,6 +23,9 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
+def random_exercise_selection(list, n):
+    return random.sample(list, n)
+
 ###############################################
 # API Request URL
 
@@ -30,8 +33,12 @@ API_BASE_URL = "https://exercisedb.p.rapidapi.com"
 
 headers = {
 	"X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
-	"X-RapidAPI-Key": "7ddbb671c3msh5ac6eca10dce7d9p1c4f61jsna698597b6a3f"
+	"X-RapidAPI-Key": "81c2b66ea0msh15a68488073ce39p13f5f0jsndb8cd49f0ee7"
 }
+# headers = {
+# 	"X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
+# 	"X-RapidAPI-Key": "7ddbb671c3msh5ac6eca10dce7d9p1c4f61jsna698597b6a3f"
+# }
 
 ###############################################
 # Homepage route
@@ -251,9 +258,17 @@ def program_choice(user_id):
 
 
 @app.route('/program/<int:user_id>/template')
-def program_template(user_id):
+def generate_program(user_id):
     """This form will display their generated program."""
     user = User.query.get(user_id)
+
+    target_muscles = ['abs', 'biceps', 'delts', 'hamstrings', 'lats', 'pectorals', 'quads', 'triceps']
+    for muscle in target_muscles:
+        response = requests.request("GET", f"{API_BASE_URL}/exercises/target/{muscle}", headers = headers)
+        
+        data = response.json()
+        exercises = [e for e in data if e['equipment'] == user.equipment_type]
+        print(random_exercise_selection(exercises, 1))
 
     return render_template('/program/program_template.html', user = user)
 
