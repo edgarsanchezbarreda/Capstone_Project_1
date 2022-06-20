@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{user.username}}'s Program</h1>
+<br>
+<h4>Strength Training Routine - 3 Times Per Week</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Exercise</th>
+            <th scope="col">Muscle</th>
+            <th scope="col">Sets</th>
+            <th scope="col">Reps</th>
+            <th scope="col">Exercise Gif</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for exercise, id in user_ids %}
+        <tr>
+            <th scope="row">{{id}}</th>
+            <td>{{exercise.name}}</td>
+            <td>{{exercise.target_muscle}}</td>
+            <td>{{exercise.sets_per_exercise}}</td>
+            <td>{{exercise.reps_per_set}}</td>
+            <td><img class="gif" src="{{exercise.exercise_gif}}" alt=""></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<form action="/program/{{user.id}}/template/delete" method="post">
+    <button class="btn btn-danger">
+        Delete Program
+    </button>
+</form>
+{% if user.calorie_maintenance %}
+<br>
+<hr>
+<br>
+<h4>Nutrition</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Calorie Intake</th>
+            <th scope="col">Protein</th>
+            <th scope="col">Carbohydrates</th>
+            <th scope="col">Fats</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{user.calorie_maintenance}} cals</td>
+            <td>{{user.protein}}g</td>
+            <td>{{user.carbohydrate}}g</td>
+            <td>{{user.fat}}g</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endif %}
+
+{% endblock %}

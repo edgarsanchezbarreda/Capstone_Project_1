@@ -41,6 +41,8 @@ class User(db.Model):
 
     goal = db.Column(db.Text)
 
+    equipment_type = db.Column(db.Text)
+
     exercises = db.relationship('Exercise')
 
 
@@ -83,48 +85,6 @@ class User(db.Model):
         return False
 
 
-    # @classmethod
-    # def calculate_macros(cls, self, gender, age, height, weight, activity_level):
-    #     """Calculate macros if body fat is included"""
-
-    #     user = User.query.filter_by(self.id).first()
-
-    #     if gender == 'Male':
-
-    #         weight_calc = weight*10
-    #         height_calc = height*6.25
-    #         age_calc = (age * 5) + 5
-
-    #         BMR = weight_calc + height_calc - age_calc
-    #         macros_calculated = BMR * activity_level
-
-    #         macros = User(
-    #             calorie_maintenance=macros_calculated,
-    #             protein = (macros_calculated * .4)/4,
-    #             carbohydrate = (macros_calculated * .2)/4,
-    #             fat = (macros_calculated * .4)/9    
-    #             )
-    #         db.session.add(macros)
-    #         print(macros_calculated)
-    #         return macros_calculated
-    #     else:
-    #         weight_calc = weight*10
-    #         height_calc = height*6.25
-    #         age_calc = (age * 5) - 161
-
-    #         BMR = weight_calc + height_calc - age_calc
-    #         macros_calculated = BMR * activity_level
-
-    #         macros = User(
-    #             calorie_maintenance=macros_calculated,
-    #             protein = (macros_calculated * .4)/4,
-    #             carbohydrate = (macros_calculated * .2)/4,
-    #             fat = (macros_calculated * .4)/9    
-    #             )
-    #         db.session.add(macros)
-    #         print(macros_calculated)
-    #         return macros_calculated 
-
 class Exercise(db.Model):
     """An individual exercise/movement"""
 
@@ -142,7 +102,7 @@ class Exercise(db.Model):
 
     reps_per_set = db.Column(db.Integer, nullable = False)
 
-    equipment_type = db.Column(db.Text, nullable = False, unique = True)
+    equipment_type = db.Column(db.Text, nullable = False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'))
 

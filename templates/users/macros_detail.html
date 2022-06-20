@@ -3,11 +3,20 @@
 
 <div class="container">
     <div class="home-hero">
-        <h1>Here are you maintenance calories:</h1>
-        <h1>{{user.calorie_maintenance}}</h1>
-        <h4>Do you have any specific fitness goals?</h4>
-        <p>Select the option below that best matches your primary goal</p>
-        <!-- <a href="/signup" class="btn btn-primary">Sign up</a> -->
+        <h1>Here are the calories needed to {{user.goal}}:</h1>
+        {% if user.goal == 'lose weight' %}
+        <h1>{{user.calorie_maintenance - 500}}</h1>
+        {% else %}
+        <h1>{{user.calorie_maintenance + 500}}</h1>
+        {% endif %}
+        <h3>The macronutrients you need to consume:</h3>
+
+        <p>Protein: {{user.protein}}</p>
+        <p>Carbohydrate: {{user.carbohydrate}}</p>
+        <p>Fat: {{user.fat}}</p>
+        <form action="/program/{{user.id}}">
+            <button class="btn btn-primary btn-md btn-block">Next</button>
+        </form>
     </div>
 </div>
 

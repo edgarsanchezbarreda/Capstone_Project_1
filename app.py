@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, User, Exercise, User_Workout
-from forms import MacrosForm, SignUpForm, LoginForm
+from forms import MacrosForm, SignUpForm, LoginForm, GoalForm, EquipmentTypeForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -23,6 +23,11 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
+def random_exercise_selection(list, n):
+    return random.sample(list, n)
+
+target_muscles = ['abs', 'biceps', 'delts', 'hamstrings', 'lats', 'pectorals', 'quads', 'triceps']
+
 ###############################################
 # API Request URL
 
@@ -30,8 +35,12 @@ API_BASE_URL = "https://exercisedb.p.rapidapi.com"
 
 headers = {
 	"X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
-	"X-RapidAPI-Key": "7ddbb671c3msh5ac6eca10dce7d9p1c4f61jsna698597b6a3f"
+	"X-RapidAPI-Key": "81c2b66ea0msh15a68488073ce39p13f5f0jsndb8cd49f0ee7"
 }
+# headers = {
+# 	"X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
+# 	"X-RapidAPI-Key": "7ddbb671c3msh5ac6eca10dce7d9p1c4f61jsna698597b6a3f"
+# }
 
 ###############################################
 # Homepage route
@@ -44,16 +53,9 @@ def home():
 
     else:
         return render_template('index.html')
+
 @app.route('/home/<int:user_id>')
 def home_logged_in_user(user_id):
-    if g.user:
-        user = User.query.get(user_id)
-        return render_template('home.html', user=user)
-
-    else:
-        return render_template('index.html')
-@app.route('/home/<int:user_id>')
-def homepage(user_id):
     if g.user:
         user = User.query.get(user_id)
         return render_template('home.html', user=user)
@@ -144,13 +146,38 @@ def logout():
 
 
 ################################
+# Questionnaire 
+
+@app.route('/questionnaire/<int:user_id>', methods = ['GET', 'POST'])
+def questionnaire_start(user_id):
+    user = User.query.get(user_id)
+
+    form = GoalForm()
+
+    if form.validate_on_submit():
+        user.goal = form.goal.data
+        db.session.commit()
+        return redirect(f"/questionnaire/{user.id}/macros")
+
+    return render_template('/users/questionnaire_start.html', user = user, form = form)
+
+
+@app.route('/questionnaire/<int:user_id>/macros')
+def questionnaire_macros(user_id):
+    user = User.query.get(user_id)
+
+    return render_template('/users/questionnaire_macros.html', user = user)
+
+
+
+
+################################
 # Macros Calculation
 
-@app.route('/macros', methods=['GET', 'POST'])
-def calculate_macros():
+@app.route('/macros/<int:user_id>', methods=['GET', 'POST'])
+def calculate_macros(user_id):
     """Renders calculate macros page and handles calculation of macros"""
 
-    user_id = session[CURR_USER_KEY]
     user = User.query.get(user_id)
 
     form = MacrosForm()
@@ -160,51 +187,47 @@ def calculate_macros():
             weight_calc = form.weight.data*10
             height_calc = form.height.data*6.25
             age_calc = (form.age.data * 5)
-            print(weight_calc)
-            print(height_calc)
-            print(age_calc)
+
             BMR = (weight_calc + height_calc) - age_calc + 5
-            print(BMR)
+            
             macros_calculated = math.ceil(BMR * float(form.activity_level.data))
-            print(macros_calculated)
+            
             user.gender = form.gender.data
             user.age = form.age.data
             user.height = form.height.data
             user.weight = form.weight.data
             user.activity_level = form.activity_level.data
             user.calorie_maintenance = macros_calculated,
-            user.protein = (macros_calculated * .4)/4,
-            user.carbohydrate = (macros_calculated * .2)/4,
-            user.fat = (macros_calculated * .4)/9    
+            user.protein = math.ceil(form.weight.data * 2.2),
+            user.carbohydrate = math.ceil((macros_calculated * .2)/4),
+            user.fat = math.ceil((macros_calculated * .4)/9)    
             
             db.session.commit()
             
-            return redirect(f"macros/{user_id}/detail")
+            return redirect(f"/macros/{user.id}/detail")
         
         else:
             weight_calc = form.weight.data*10
             height_calc = form.height.data*6.25
             age_calc = (form.age.data * 5)
-            print(weight_calc)
-            print(height_calc)
-            print(age_calc)
+
             BMR = (weight_calc + height_calc) - age_calc - 161
-            print(BMR)
+            
             macros_calculated = math.ceil(BMR * float(form.activity_level.data))
-            print(macros_calculated)
+            
             user.gender = form.gender.data
             user.age = form.age.data
             user.height = form.height.data
             user.weight = form.weight.data
             user.activity_level = form.activity_level.data
             user.calorie_maintenance = macros_calculated,
-            user.protein = (macros_calculated * .4)/4,
-            user.carbohydrate = (macros_calculated * .2)/4,
-            user.fat = (macros_calculated * .4)/9    
+            user.protein = math.ceil((form.weight.data * 2.2)),
+            user.carbohydrate = math.ceil((macros_calculated * .2)/4),
+            user.fat = math.ceil((macros_calculated * .4)/9)    
             
             db.session.commit()
             
-            return redirect(f"macros/{user_id}/detail")
+            return redirect(f"/macros/{user.id}/detail")
 
     return render_template('users/macros.html', user=user, form=form)
 
@@ -215,3 +238,67 @@ def next(user_id):
     return render_template('users/macros_detail.html', user = user)
 
 
+###############################
+# Program Details and Questionnaire
+
+@app.route('/program/<int:user_id>', methods = ['GET', 'POST'])
+def program_choice(user_id):
+    """This route allows a user to select the equipment that is available to them as well as any priority muscle group."""
+    user = User.query.get(user_id)
+
+    form = EquipmentTypeForm()
+    
+    if form.validate_on_submit():
+        user.equipment_type = form.equipment_type.data
+        db.session.commit()
+        if not user.exercises:
+            for muscle in target_muscles:
+                response = requests.request("GET", f"{API_BASE_URL}/exercises/target/{muscle}", headers = headers)
+                
+                data = response.json()
+                exercises = [e for e in data if e['equipment'] == user.equipment_type]
+                
+                random_exercise = random_exercise_selection(exercises, 1)
+                
+                user_exercise = Exercise(
+                    name = random_exercise[0]['name'],
+                    target_muscle = random_exercise[0]['target'],
+                    exercise_gif = random_exercise[0]['gifUrl'],
+                    sets_per_exercise = 4,
+                    reps_per_set = 10,
+                    equipment_type = random_exercise[0]['equipment'],
+                    user_id = user.id
+                )
+
+                db.session.add(user_exercise)
+                db.session.commit()
+
+                user_workout = User_Workout(
+                    user_id = user.id,
+                    exercise_id = user_exercise.id
+                )
+                db.session.add(user_workout)
+                db.session.commit()
+
+        return redirect(f"/program/{user.id}/template")
+    return render_template('program/program_choice.html', user = user, form = form)
+
+
+@app.route('/program/<int:user_id>/template')
+def generate_program(user_id):
+    """This form will display their generated program."""
+    user = User.query.get(user_id)
+    ids = range(1,9)
+    user_ids = zip(user.exercises, ids)
+    return render_template('/program/program_template.html', user = user, target_muscles = target_muscles, ids = ids, user_ids = user_ids)
+
+@app.route('/program/<int:user_id>/template/delete', methods = ['POST'])
+def delete_program(user_id):
+    """Deletes workoute program."""
+    user = User.query.get(user_id)
+    
+    for exercises in user.exercises:
+        db.session.delete(exercises)
+    db.session.commit()
+
+    return redirect(f"/program/{user.id}")
