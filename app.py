@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, User, Exercise, User_Workout
-from forms import MacrosForm, SignUpForm, LoginForm, GoalForm, EquipmentTypeForm, TargetMuscleListForm
+from forms import MacrosForm, SignUpForm, LoginForm, GoalForm, EquipmentTypeForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -247,12 +247,9 @@ def program_choice(user_id):
     user = User.query.get(user_id)
 
     form = EquipmentTypeForm()
-    muscle_form = TargetMuscleListForm()
+    
     if form.validate_on_submit():
         user.equipment_type = form.equipment_type.data
-        db.session.commit()
-    if muscle_form.validate_on_submit():
-        user.target_muscle = muscle_form.target_muscle.data
         db.session.commit()
         if not user.exercises:
             for muscle in target_muscles:
@@ -284,7 +281,7 @@ def program_choice(user_id):
                 db.session.commit()
 
         return redirect(f"/program/{user.id}/template")
-    return render_template('program/program_choice.html', user = user, form = form, muscle_form = muscle_form)
+    return render_template('program/program_choice.html', user = user, form = form)
 
 
 @app.route('/program/<int:user_id>/template')
@@ -295,3 +292,13 @@ def generate_program(user_id):
     user_ids = zip(user.exercises, ids)
     return render_template('/program/program_template.html', user = user, target_muscles = target_muscles, ids = ids, user_ids = user_ids)
 
+@app.route('/program/<int:user_id>/template/delete', methods = ['POST'])
+def delete_program(user_id):
+    """Deletes workoute program."""
+    user = User.query.get(user_id)
+    
+    for exercises in user.exercises:
+        db.session.delete(exercises)
+    db.session.commit()
+
+    return redirect(f"/program/{user.id}")

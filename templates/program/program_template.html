@@ -2,7 +2,7 @@
 {% block content %}
 <h1>{{user.username}}'s Program</h1>
 <br>
-<h4>Strength Training Routine</h4>
+<h4>Strength Training Routine - 3 Times Per Week</h4>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -11,6 +11,7 @@
             <th scope="col">Muscle</th>
             <th scope="col">Sets</th>
             <th scope="col">Reps</th>
+            <th scope="col">Exercise Gif</th>
         </tr>
     </thead>
     <tbody>
@@ -21,10 +22,17 @@
             <td>{{exercise.target_muscle}}</td>
             <td>{{exercise.sets_per_exercise}}</td>
             <td>{{exercise.reps_per_set}}</td>
+            <td><img class="gif" src="{{exercise.exercise_gif}}" alt=""></td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+<form action="/program/{{user.id}}/template/delete" method="post">
+    <button class="btn btn-danger">
+        Delete Program
+    </button>
+</form>
+{% if user.calorie_maintenance %}
 <br>
 <hr>
 <br>
@@ -48,6 +56,6 @@
     </tbody>
 </table>
 
-
+{% endif %}
 
 {% endblock %}

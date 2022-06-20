@@ -19,6 +19,11 @@ body {
   .btn:hover {
     cursor: pointer;
   }
+
+  .gif {
+    width: 5rem;
+    height: 5rem;
+  }
   
   /* ======================= Nav */
   
