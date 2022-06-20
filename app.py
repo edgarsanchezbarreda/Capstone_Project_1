@@ -268,7 +268,21 @@ def generate_program(user_id):
         
         data = response.json()
         exercises = [e for e in data if e['equipment'] == user.equipment_type]
-        print(random_exercise_selection(exercises, 1))
+        
+        random_exercise = random_exercise_selection(exercises, 1)
+        
+        user_exercise = Exercise(
+            name = random_exercise[0]['name'],
+            target_muscle = random_exercise[0]['target'],
+            exercise_gif = random_exercise[0]['gifUrl'],
+            sets_per_exercise = 4,
+            reps_per_set = 10,
+            equipment_type = random_exercise[0]['equipment'],
+            user_id = user.id
+        )
 
+        db.session.add(user_exercise)
+    db.session.commit()
+        
     return render_template('/program/program_template.html', user = user)
 

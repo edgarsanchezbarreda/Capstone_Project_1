@@ -104,7 +104,7 @@ class Exercise(db.Model):
 
     reps_per_set = db.Column(db.Integer, nullable = False)
 
-    equipment_type = db.Column(db.Text, nullable = False, unique = True)
+    equipment_type = db.Column(db.Text, nullable = False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'))
 
