@@ -42,19 +42,3 @@ class EquipmentTypeForm(FlaskForm):
     """Form used to select equipment available to user."""
 
     equipment_type = SelectField('Equipment Type', choices = [('barbell', 'Barbell'), ('dumbbell', 'Dumbbell'), ('body weight', 'Body Weight')], validators=[DataRequired()])
-
-
-# class TargetMuscleListForm(FlaskForm):
-#     """Allows users to select a target muscle they want to prioritize"""
-
-#     target_muscle = SelectField('Priority Muscle Group', choices =[
-#     ('', 'None'),
-#     ('abs', 'Abs'), 
-#     ('biceps', 'Biceps'),  
-#     ('delts', 'Delts'),  
-#     ('hamstrings', 'Hamstrings'), 
-#     ('lats', 'Lats'),
-#     ('pectorals', 'Chest'),
-#     ('quads', 'Quads'),
-#     ('triceps', 'Triceps')],
-#     validators=[DataRequired()])

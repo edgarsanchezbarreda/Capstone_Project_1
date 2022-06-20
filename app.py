@@ -37,16 +37,14 @@ headers = {
 	"X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
 	"X-RapidAPI-Key": "81c2b66ea0msh15a68488073ce39p13f5f0jsndb8cd49f0ee7"
 }
-# headers = {
-# 	"X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
-# 	"X-RapidAPI-Key": "7ddbb671c3msh5ac6eca10dce7d9p1c4f61jsna698597b6a3f"
-# }
+
 
 ###############################################
 # Homepage route
 
 @app.route('/')
 def home():
+    """Checks if user is logged in, and displays the appropriate page."""
     if g.user:
         
         return render_template('home.html')
@@ -93,20 +91,16 @@ def do_logout():
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
+    """Allows user to sign up."""
     form = SignUpForm()
 
     if form.validate_on_submit():
-        # try:
         user = User.signup(
             username=form.username.data,
             password=form.password.data,
             email=form.email.data
             )
         db.session.commit()
-
-        # except IntegrityError:
-        #     flash("Username already taken", 'danger')
-        #     return render_template('users/signup.html', form=form)
 
         do_login(user)
 
@@ -118,7 +112,7 @@ def signup():
     
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    """Handle user login."""
+    """Handles user login."""
 
     form = LoginForm()
 
@@ -150,6 +144,7 @@ def logout():
 
 @app.route('/questionnaire/<int:user_id>', methods = ['GET', 'POST'])
 def questionnaire_start(user_id):
+    """Asks user's goal."""
     user = User.query.get(user_id)
 
     form = GoalForm()
@@ -164,6 +159,7 @@ def questionnaire_start(user_id):
 
 @app.route('/questionnaire/<int:user_id>/macros')
 def questionnaire_macros(user_id):
+    
     user = User.query.get(user_id)
 
     return render_template('/users/questionnaire_macros.html', user = user)
@@ -243,7 +239,7 @@ def next(user_id):
 
 @app.route('/program/<int:user_id>', methods = ['GET', 'POST'])
 def program_choice(user_id):
-    """This route allows a user to select the equipment that is available to them as well as any priority muscle group."""
+    """This route allows a user to select the equipment that is available to them, and generates a random workout program based off their goal and equipment type."""
     user = User.query.get(user_id)
 
     form = EquipmentTypeForm()
@@ -264,14 +260,24 @@ def program_choice(user_id):
                     name = random_exercise[0]['name'],
                     target_muscle = random_exercise[0]['target'],
                     exercise_gif = random_exercise[0]['gifUrl'],
-                    sets_per_exercise = 4,
-                    reps_per_set = 10,
                     equipment_type = random_exercise[0]['equipment'],
                     user_id = user.id
                 )
 
                 db.session.add(user_exercise)
                 db.session.commit()
+
+                for exercise in user.exercises:
+                    if user.goal == 'gain strength':
+                        exercise.sets_per_exercise = 5,
+                        exercise.reps_per_set = '4-6',
+                        exercise.weight = '80% of 1 rep max'
+                        db.session.commit()
+                    else:
+                        exercise.sets_per_exercise = 4,
+                        exercise.reps_per_set = '10-12',
+                        exercise.weight = '60% of 1 rep max'
+                        db.session.commit()
 
                 user_workout = User_Workout(
                     user_id = user.id,

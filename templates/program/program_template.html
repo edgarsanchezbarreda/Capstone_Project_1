@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>{{user.username}}'s Program</h1>
+<h1>{{user.username}} Program</h1>
 <br>
 <h4>Strength Training Routine - 3 Times Per Week</h4>
 <table class="table table-striped">
@@ -11,6 +11,7 @@
             <th scope="col">Muscle</th>
             <th scope="col">Sets</th>
             <th scope="col">Reps</th>
+            <th scope="col">Weight</th>
             <th scope="col">Exercise Gif</th>
         </tr>
     </thead>
@@ -22,6 +23,7 @@
             <td>{{exercise.target_muscle}}</td>
             <td>{{exercise.sets_per_exercise}}</td>
             <td>{{exercise.reps_per_set}}</td>
+            <td>{{exercise.weight}}</td>
             <td><img class="gif" src="{{exercise.exercise_gif}}" alt=""></td>
         </tr>
         {% endfor %}

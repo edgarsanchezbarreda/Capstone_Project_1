@@ -98,9 +98,11 @@ class Exercise(db.Model):
 
     exercise_gif = db.Column(db.Text)
 
-    sets_per_exercise = db.Column(db.Integer, nullable = False)
+    sets_per_exercise = db.Column(db.Integer)
 
-    reps_per_set = db.Column(db.Integer, nullable = False)
+    reps_per_set = db.Column(db.Text)
+
+    weight = db.Column(db.Text)
 
     equipment_type = db.Column(db.Text, nullable = False)
 
