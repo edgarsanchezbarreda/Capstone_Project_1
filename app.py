@@ -26,6 +26,8 @@ connect_db(app)
 def random_exercise_selection(list, n):
     return random.sample(list, n)
 
+target_muscles = ['abs', 'biceps', 'delts', 'hamstrings', 'lats', 'pectorals', 'quads', 'triceps']
+
 ###############################################
 # API Request URL
 
@@ -252,6 +254,34 @@ def program_choice(user_id):
     if muscle_form.validate_on_submit():
         user.target_muscle = muscle_form.target_muscle.data
         db.session.commit()
+        if not user.exercises:
+            for muscle in target_muscles:
+                response = requests.request("GET", f"{API_BASE_URL}/exercises/target/{muscle}", headers = headers)
+                
+                data = response.json()
+                exercises = [e for e in data if e['equipment'] == user.equipment_type]
+                
+                random_exercise = random_exercise_selection(exercises, 1)
+                
+                user_exercise = Exercise(
+                    name = random_exercise[0]['name'],
+                    target_muscle = random_exercise[0]['target'],
+                    exercise_gif = random_exercise[0]['gifUrl'],
+                    sets_per_exercise = 4,
+                    reps_per_set = 10,
+                    equipment_type = random_exercise[0]['equipment'],
+                    user_id = user.id
+                )
+
+                db.session.add(user_exercise)
+                db.session.commit()
+
+                user_workout = User_Workout(
+                    user_id = user.id,
+                    exercise_id = user_exercise.id
+                )
+                db.session.add(user_workout)
+                db.session.commit()
 
         return redirect(f"/program/{user.id}/template")
     return render_template('program/program_choice.html', user = user, form = form, muscle_form = muscle_form)
@@ -261,28 +291,7 @@ def program_choice(user_id):
 def generate_program(user_id):
     """This form will display their generated program."""
     user = User.query.get(user_id)
-
-    target_muscles = ['abs', 'biceps', 'delts', 'hamstrings', 'lats', 'pectorals', 'quads', 'triceps']
-    for muscle in target_muscles:
-        response = requests.request("GET", f"{API_BASE_URL}/exercises/target/{muscle}", headers = headers)
-        
-        data = response.json()
-        exercises = [e for e in data if e['equipment'] == user.equipment_type]
-        
-        random_exercise = random_exercise_selection(exercises, 1)
-        
-        user_exercise = Exercise(
-            name = random_exercise[0]['name'],
-            target_muscle = random_exercise[0]['target'],
-            exercise_gif = random_exercise[0]['gifUrl'],
-            sets_per_exercise = 4,
-            reps_per_set = 10,
-            equipment_type = random_exercise[0]['equipment'],
-            user_id = user.id
-        )
-
-        db.session.add(user_exercise)
-    db.session.commit()
-        
-    return render_template('/program/program_template.html', user = user)
+    ids = range(1,9)
+    user_ids = zip(user.exercises, ids)
+    return render_template('/program/program_template.html', user = user, target_muscles = target_muscles, ids = ids, user_ids = user_ids)
 

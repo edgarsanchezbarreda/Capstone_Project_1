@@ -129,6 +129,25 @@ body {
     text-shadow: 0 0 8px #66757f;
   }
 
+   .home-hero-program {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    width: 100vw;
+    left: 0;
+    z-index: -1;
+    background-size: cover;
+    background-position: center center;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    text-shadow: 0 0 3px #66757f;
+  }
+
 
   .onboarding > .navbar {
     background-image: url("/static/images/nav-bg.png");
