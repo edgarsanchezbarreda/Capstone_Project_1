@@ -35,7 +35,7 @@ API_BASE_URL = "https://exercisedb.p.rapidapi.com"
 
 headers = {
 	"X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
-	"X-RapidAPI-Key": "81c2b66ea0msh15a68488073ce39p13f5f0jsndb8cd49f0ee7"
+	"X-RapidAPI-Key": "223bb7db04mshd8ae1af744fb12ep12e2b5jsn8b10ff422736"
 }
 
 
@@ -232,6 +232,13 @@ def next(user_id):
     user = User.query.get(user_id)
 
     return render_template('users/macros_detail.html', user = user)
+
+
+@app.route(f"/macros/<int:user_id>/view")
+def view_calories(user_id):
+    user = User.query.get(user_id)
+
+    return render_template('/users/view_calories.html', user = user)
 
 
 ###############################

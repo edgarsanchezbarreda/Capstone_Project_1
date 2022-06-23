@@ -1,14 +1,22 @@
 {% extends 'base.html' %}
-
+{% block body_class %}home{% endblock %}
 {% block content %}
 {% if user.exercises %}
 <div class="container">
     <div class="home-hero">
         <h1>Hello, {{user.username}}</h1>
-        <h4>View your program here</h4>
+        <h4>You may view or delete your program here:</h4>
         <br>
-        <a href="/program/{{user.id}}/template" class="btn btn-primary btn-md">Program</a>
-        <a href="/program/{{user.id}}/template" class="btn btn-danger btn-md">Create new program</a>
+        <div>
+            <form>
+                <button formaction="/program/{{user.id}}/template" class="btn btn-submit btn-md">Program</button>
+                <button formaction="/program/{{user.id}}/template"
+                    class="btn btn-light btn-md text-submit text-nowrap">Delete
+                    Program</button>
+            </form>
+
+        </div>
+
     </div>
 </div>
 {% else %}

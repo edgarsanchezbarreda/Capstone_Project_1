@@ -41,4 +41,4 @@ class GoalForm(FlaskForm):
 class EquipmentTypeForm(FlaskForm):
     """Form used to select equipment available to user."""
 
-    equipment_type = SelectField('Equipment Type', choices = [('barbell', 'Barbell'), ('dumbbell', 'Dumbbell'), ('body weight', 'Body Weight')], validators=[DataRequired()])
+    equipment_type = SelectField('Equipment Type', choices = [('barbell', 'Barbell'), ('body weight', 'Body Weight')], validators=[DataRequired()])
