@@ -42,3 +42,11 @@ class EquipmentTypeForm(FlaskForm):
     """Form used to select equipment available to user."""
 
     equipment_type = SelectField('Equipment Type', choices = [('barbell', 'Barbell'), ('body weight', 'Body Weight')], validators=[DataRequired()])
+
+
+class EditAccountForm(FlaskForm):
+    """Form to edit user account"""
+
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('E-mail', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[Length(min=6)])

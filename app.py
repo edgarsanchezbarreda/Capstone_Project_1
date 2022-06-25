@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, User, Exercise, User_Workout
-from forms import MacrosForm, SignUpForm, LoginForm, GoalForm, EquipmentTypeForm
+from forms import EditAccountForm, MacrosForm, SignUpForm, LoginForm, GoalForm, EquipmentTypeForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -139,6 +139,36 @@ def logout():
     return redirect('/login')
 
 
+
+@app.route('/user/account', methods = ['GET', 'POST'])
+def user_account():
+    """Dislays user account and handles editing username and email."""
+    
+    user_id = session[CURR_USER_KEY]
+    user = User.query.get(user_id)
+
+    form = EditAccountForm(obj=user)
+
+    if form.validate_on_submit():
+        """Check if password input is valid."""
+
+        user = User.authenticate(form.username.data, 
+                                form.password.data)
+
+        if user:
+            """If password was valid, update user profile and redirect to user home page."""
+            user.email = form.email.data
+            user.username = form.username.data    
+            
+            db.session.commit()                        
+            return redirect(f"/home/{user_id}")
+        else:
+            flash("Invalid password.", 'danger')
+            return redirect(f"/home/{user_id}")
+    return render_template('/users/user_account.html', user = user, form = form)
+
+
+
 ################################
 # Questionnaire 
 
@@ -159,6 +189,7 @@ def questionnaire_start(user_id):
 
 @app.route('/questionnaire/<int:user_id>/macros')
 def questionnaire_macros(user_id):
+    """Asks user if they want to calculate macros."""
     
     user = User.query.get(user_id)
 
@@ -229,6 +260,7 @@ def calculate_macros(user_id):
 
 @app.route('/macros/<int:user_id>/detail')
 def next(user_id):
+    """Displays user's macronutrient and calorie intake breakdown."""
     user = User.query.get(user_id)
 
     return render_template('users/macros_detail.html', user = user)
@@ -239,6 +271,7 @@ def view_calories(user_id):
     user = User.query.get(user_id)
 
     return render_template('/users/view_calories.html', user = user)
+
 
 
 ###############################

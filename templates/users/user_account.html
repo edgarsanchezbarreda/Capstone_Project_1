@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block body_class %}home{% endblock %}
+{% block content %}
+
+<div class="row justify-content-md-center">
+    <div class="home-hero">
+        <div class="col-md-7 col-lg-5">
+            <h2 class="join-message">Edit your account below:</h2>
+            <form method="POST" id="user_form">
+                {{ form.hidden_tag() }}
+
+                {% for field in form if field.widget.input_type != 'hidden' and field.name != 'password' %}
+                {% for error in field.errors %}
+                <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+                {{ field(placeholder=field.label.text, class="form-control") }}
+                {% endfor %}
+
+                <!-- <button class="btn btn-submit btn-lg btn-block text-white">Sign up</button> -->
+                <p>To confirm changes, enter your password:</p>
+                {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                <span class="text-danger">
+                    {{ error }}
+                </span>
+                {% endfor %}
+                {% endif %}
+                {{ form.password(placeholder="Enter your password to confirm", class="form-control") }}
+
+                <div class="edit-btn-area">
+                    <button class="btn btn-submit btn-md btn-block text-white">Edit</button>
+                    <a href="/home/{{user_id}}" class="btn btn-light text-submit">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

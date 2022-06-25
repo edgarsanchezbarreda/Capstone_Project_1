@@ -35,17 +35,18 @@
                     </a>
             </div>
             <ul class="nav navbar-nav navbar-right">
-                {% if g.user.exercises %}
+                {% if g.user %}
                 <li><a href="/program/{{user.id}}/template">Program</a></li>
-                {% else %}
-                <li><a href="">Program</a></li>
+                <li><a href="/user/account">Account</a></li>
+                <li><a href="/logout">Log out</a></li>
                 {% endif %}
                 {% if not g.user %}
                 <li><a href="/signup">Sign up</a></li>
                 <li><a href="/login">Log in</a></li>
                 {% else %}
-                <li><a href="/logout">Log out</a></li>
-                <a href=""><i class="fa-regular fa-user"></i></a>
+
+
+                <!-- <a href=""><i class="fa-regular fa-user"></i></a> -->
 
                 {% endif %}
 
