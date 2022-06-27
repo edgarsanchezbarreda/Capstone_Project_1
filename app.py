@@ -17,7 +17,7 @@ os.environ.get('DATABASE_URL', 'postgresql:///fit_app')
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] =  False
 app.config['SQLALCHEMY_ECHO'] =  False
-app.config['SECRET_KEY'] =  'helloworld123'
+app.config['SECRET_KEY'] =  os.environ.get('SECRET_KEY', 'helloworld123')
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
